@@ -96,11 +96,11 @@ public class Player : MonoBehaviour
         if (rig.velocity.magnitude > 10) return;
         if (ani.GetCurrentAnimatorStateInfo(0).IsName("受傷")) return;
 
-        float v = Input.GetAxis("Vertical");
-        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+        float h = Input.GetAxisRaw("Horizontal");
         
-        rig.AddForce(transform.forward * speed * Time.fixedDeltaTime * Mathf.Abs(v));
-        rig.AddForce(transform.forward * speed * Time.fixedDeltaTime * Mathf.Abs(h));
+        if (Mathf.Abs(v) > 0) rig.AddForce(transform.forward * speed * Time.fixedDeltaTime * Mathf.Abs(v));
+        else if (Mathf.Abs(h) > 0) rig.AddForce(transform.forward * speed * Time.fixedDeltaTime * Mathf.Abs(h));
     }
 
     /// <summary>

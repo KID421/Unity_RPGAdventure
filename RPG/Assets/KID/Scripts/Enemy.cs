@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour
     public EnemyData data;
 
     private Animator ani;
+    private Rigidbody rig;
     private NavMeshAgent nma;
     private Transform player;
     private Transform can;
@@ -25,6 +26,7 @@ public class Enemy : MonoBehaviour
     {
         ani = GetComponent<Animator>();
         nma = GetComponent<NavMeshAgent>();
+        rig = GetComponent<Rigidbody>();
         nma.speed = data.speed;
 
         can = transform.Find("血條");
@@ -62,13 +64,16 @@ public class Enemy : MonoBehaviour
     private void Move()
     {
         if (ani.GetBool("死亡開關")) return;
-        if (ani.GetCurrentAnimatorStateInfo(0).IsName("攻擊1") || ani.GetCurrentAnimatorStateInfo(0).IsName("攻擊2") || ani.GetCurrentAnimatorStateInfo(0).IsName("受傷")) return;
+        if (ani.GetCurrentAnimatorStateInfo(0).IsName("攻擊1") || ani.GetCurrentAnimatorStateInfo(0).IsName("攻擊2") || ani.GetCurrentAnimatorStateInfo(0).IsName("受傷"))
+        {
+            nma.isStopped = true;
+            return;
+        }
 
         float dis = Vector3.Distance(transform.position, player.position);
 
         if (dis < data.rangeAttack)
         {
-            nma.isStopped = true;
             Attack();
         }
         else if (dis < data.rangeTrack)
@@ -91,8 +96,10 @@ public class Enemy : MonoBehaviour
     {
         Vector3 pos = player.position - transform.position;
         Quaternion toRot = Quaternion.LookRotation(pos);
+        transform.rotation = Quaternion.Lerp(transform.rotation, toRot, 0.3f * Time.deltaTime * 10);
 
-        transform.rotation = Quaternion.Lerp(transform.rotation, toRot, 0.3f * Time.deltaTime * 3);
+        nma.isStopped = true;
+        nma.velocity = Vector3.zero;
 
         timer += Time.deltaTime;
 
@@ -101,6 +108,7 @@ public class Enemy : MonoBehaviour
             timer = 0;
             randomAttack = Random.Range(1, 3);
             ani.SetInteger("攻擊", randomAttack);
+            ani.SetBool("攻擊中", true);
             Invoke("AttackStop", 1f);
             attacking = true;
 
@@ -127,6 +135,7 @@ public class Enemy : MonoBehaviour
     private void AttackStop()
     {
         ani.SetInteger("攻擊", 0);
+        ani.SetBool("攻擊中", false);
         attacking = false;
     }
 
@@ -147,6 +156,7 @@ public class Enemy : MonoBehaviour
         hp -= damage;
         hpBar.fillAmount = hp / hpMax;
         textDamage.color = color;
+        StopAllCoroutines();
         StartCoroutine(ShowDamage(damage));
 
         if (hp <= 0) Dead();
@@ -171,7 +181,7 @@ public class Enemy : MonoBehaviour
 
     private void Dead()
     {
-        StopAllCoroutines();
+        rig.Sleep();
         ani.SetBool("死亡開關", true);
         nma.isStopped = true;
         GetComponent<Collider>().enabled = false;

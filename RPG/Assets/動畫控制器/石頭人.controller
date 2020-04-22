@@ -135,6 +135,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 2
     m_ConditionEvent: "\u6B7B\u4EA1\u958B\u95DC"
     m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: "\u653B\u64CA\u4E2D"
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 216068191461747635}
   m_Solo: 0
@@ -227,6 +230,12 @@ AnimatorController:
     m_Controller: {fileID: 0}
   - m_Name: "\u653B\u64CA"
     m_Type: 3
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
+  - m_Name: "\u653B\u64CA\u4E2D"
+    m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
